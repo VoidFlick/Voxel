@@ -1,9 +1,9 @@
 diff --git a/style.css b/style.css
 new file mode 100644
-index 0000000000000000000000000000000000000000..55d949972d4543a33e3c6abd08b3915000a4e1f3
+index 0000000000000000000000000000000000000000..2306aa9543286f233af9bb65de547333fb35195a
 --- /dev/null
 +++ b/style.css
-@@ -0,0 +1,175 @@
+@@ -0,0 +1,366 @@
 +:root {
 +  color-scheme: dark;
 +  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
@@ -21,19 +21,18 @@ index 0000000000000000000000000000000000000000..55d949972d4543a33e3c6abd08b39150
 +  min-height: 100vh;
 +  display: flex;
 +  flex-direction: column;
-+  align-items: center;
-+  gap: 16px;
++  gap: 18px;
 +  padding: 20px;
++  background: radial-gradient(circle at top, #1a2941, #0b0f18 65%);
 +}
 +
-+.hud {
-+  width: min(1100px, 100%);
++.topbar {
 +  display: flex;
 +  align-items: center;
 +  justify-content: space-between;
 +  gap: 16px;
 +  padding: 12px 18px;
-+  background: rgba(10, 14, 22, 0.7);
++  background: rgba(10, 14, 22, 0.75);
 +  border: 1px solid rgba(102, 160, 255, 0.2);
 +  border-radius: 14px;
 +  backdrop-filter: blur(12px);
@@ -65,22 +64,229 @@ index 0000000000000000000000000000000000000000..55d949972d4543a33e3c6abd08b39150
 +  color: rgba(230, 242, 255, 0.7);
 +}
 +
-+.stats {
++.top-actions {
 +  display: flex;
-+  gap: 18px;
-+  font-size: 0.85rem;
++  gap: 10px;
 +}
 +
-+.stats div {
++.layout {
++  display: grid;
++  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) minmax(220px, 260px);
++  gap: 16px;
++  align-items: start;
++}
++
++.sidebar {
++  display: flex;
++  flex-direction: column;
++  gap: 16px;
++}
++
++.sidebar.right {
++  align-items: stretch;
++}
++
++.panel {
++  padding: 18px;
++  border-radius: 16px;
++  background: rgba(12, 20, 32, 0.95);
++  border: 1px solid rgba(114, 182, 255, 0.3);
++  display: flex;
++  flex-direction: column;
++  gap: 12px;
++}
++
++.panel h2 {
++  font-size: 1rem;
++  text-transform: uppercase;
++  letter-spacing: 0.1em;
++  color: rgba(124, 212, 255, 0.9);
++}
++
++.loadout {
++  display: grid;
++  gap: 10px;
++}
++
++.weapon {
 +  display: flex;
 +  flex-direction: column;
 +  gap: 4px;
-+  text-align: right;
++  background: rgba(6, 10, 18, 0.6);
++  padding: 10px 12px;
++  border-radius: 12px;
 +}
 +
-+.stats strong {
++.weapon span {
++  font-size: 0.7rem;
++  text-transform: uppercase;
++  opacity: 0.7;
++}
++
++.weapon strong {
++  font-size: 1rem;
++}
++
++.meter {
++  display: grid;
++  gap: 6px;
++}
++
++.meter span {
++  font-size: 0.75rem;
++  text-transform: uppercase;
++  opacity: 0.7;
++}
++
++.bar {
++  width: 100%;
++  height: 8px;
++  border-radius: 999px;
++  background: rgba(7, 12, 22, 0.8);
++  overflow: hidden;
++}
++
++.bar div {
++  height: 100%;
++  width: 100%;
++  background: linear-gradient(90deg, #4dd4ff, #6e5bff);
++  transition: width 0.2s ease;
++}
++
++.meter strong {
 +  font-size: 1.2rem;
 +  color: #7cd4ff;
++}
++
++.stat-grid {
++  display: grid;
++  grid-template-columns: repeat(2, minmax(0, 1fr));
++  gap: 10px;
++}
++
++.stat-grid div {
++  display: grid;
++  gap: 4px;
++  background: rgba(6, 10, 18, 0.6);
++  padding: 10px 12px;
++  border-radius: 12px;
++}
++
++.stat-grid span {
++  font-size: 0.7rem;
++  text-transform: uppercase;
++  opacity: 0.6;
++}
++
++.stat-grid strong {
++  font-size: 1.1rem;
++  color: #7cd4ff;
++}
++
++.hint {
++  font-size: 0.75rem;
++  color: rgba(230, 242, 255, 0.65);
++}
++
++.arena {
++  display: flex;
++  align-items: stretch;
++}
++
++.arena-frame {
++  position: relative;
++  width: 100%;
++}
++
++canvas {
++  width: 100%;
++  border-radius: 18px;
++  border: 1px solid rgba(88, 149, 255, 0.35);
++  box-shadow: 0 20px 60px rgba(5, 9, 20, 0.65);
++  background: #0b0f18;
++}
++
++.crosshair {
++  position: absolute;
++  inset: 0;
++  display: grid;
++  place-items: center;
++  pointer-events: none;
++}
++
++.crosshair span {
++  position: absolute;
++  width: 18px;
++  height: 2px;
++  background: rgba(124, 212, 255, 0.9);
++}
++
++.crosshair span:nth-child(2) {
++  width: 2px;
++  height: 18px;
++}
++
++.mini-map {
++  position: absolute;
++  right: 18px;
++  bottom: 18px;
++  width: 160px;
++  height: 160px;
++  border-radius: 12px;
++  border: 1px solid rgba(124, 212, 255, 0.4);
++  background: rgba(10, 18, 30, 0.85);
++  display: grid;
++  grid-template-columns: repeat(10, 1fr);
++  grid-template-rows: repeat(10, 1fr);
++  overflow: hidden;
++}
++
++.mini-map span {
++  display: block;
++  width: 100%;
++  height: 100%;
++}
++
++.leaderboard {
++  list-style: none;
++  display: grid;
++  gap: 10px;
++}
++
++.leaderboard li {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  background: rgba(6, 10, 18, 0.6);
++  padding: 10px 12px;
++  border-radius: 12px;
++  font-size: 0.85rem;
++}
++
++.chat {
++  display: grid;
++  gap: 8px;
++  max-height: 180px;
++  overflow: hidden;
++}
++
++.chat p {
++  font-size: 0.75rem;
++  opacity: 0.7;
++}
++
++.chat-input {
++  display: grid;
++  grid-template-columns: 1fr auto;
++  gap: 8px;
++}
++
++.chat-input input {
++  background: rgba(6, 10, 18, 0.6);
++  border: 1px solid rgba(124, 212, 255, 0.2);
++  border-radius: 999px;
++  padding: 8px 12px;
++  color: inherit;
 +}
 +
 +button {
@@ -99,83 +305,68 @@ index 0000000000000000000000000000000000000000..55d949972d4543a33e3c6abd08b39150
 +  transform: translateY(-1px);
 +}
 +
-+.game-shell {
-+  position: relative;
-+  width: min(1100px, 100%);
-+  display: grid;
-+  place-items: center;
++button.ghost {
++  background: rgba(10, 18, 30, 0.8);
++  color: #e6f2ff;
++  border: 1px solid rgba(124, 212, 255, 0.35);
++  box-shadow: none;
 +}
 +
-+canvas {
-+  width: 100%;
-+  border-radius: 18px;
-+  border: 1px solid rgba(88, 149, 255, 0.35);
-+  box-shadow: 0 20px 60px rgba(5, 9, 20, 0.65);
-+  background: #0b0f18;
-+}
-+
-+.mini-map {
-+  position: absolute;
-+  right: 18px;
-+  bottom: 18px;
-+  width: 150px;
-+  height: 150px;
-+  border-radius: 12px;
-+  border: 1px solid rgba(124, 212, 255, 0.4);
-+  background: rgba(10, 18, 30, 0.85);
-+  display: grid;
-+  grid-template-columns: repeat(10, 1fr);
-+  grid-template-rows: repeat(10, 1fr);
-+  overflow: hidden;
-+}
-+
-+.mini-map span {
-+  display: block;
-+  width: 100%;
-+  height: 100%;
-+}
-+
-+.overlay {
++.overlay,
++.settings {
 +  position: fixed;
 +  inset: 0;
 +  display: grid;
 +  place-items: center;
 +  background: rgba(5, 8, 15, 0.7);
 +  backdrop-filter: blur(4px);
++  z-index: 10;
 +}
 +
-+.overlay.hidden {
++.overlay.hidden,
++.settings.hidden {
 +  display: none;
 +}
 +
-+.panel {
++.modal {
 +  width: min(420px, 90vw);
-+  padding: 24px;
-+  border-radius: 16px;
-+  background: rgba(12, 20, 32, 0.95);
-+  border: 1px solid rgba(114, 182, 255, 0.3);
-+  display: flex;
-+  flex-direction: column;
-+  gap: 12px;
++  align-items: flex-start;
 +}
 +
-+.panel h2 {
-+  font-size: 1.4rem;
-+}
-+
-+.panel ul {
++.modal ul {
 +  padding-left: 20px;
 +  color: rgba(230, 242, 255, 0.75);
 +}
 +
-+@media (max-width: 900px) {
-+  .hud {
++.settings label {
++  display: flex;
++  justify-content: space-between;
++  width: 100%;
++  font-size: 0.9rem;
++}
++
++@media (max-width: 1100px) {
++  .layout {
++    grid-template-columns: 1fr;
++  }
++
++  .sidebar {
++    flex-direction: row;
++    flex-wrap: wrap;
++  }
++
++  .arena {
++    order: -1;
++  }
++}
++
++@media (max-width: 700px) {
++  .topbar {
 +    flex-direction: column;
 +    align-items: flex-start;
 +  }
 +
-+  .stats {
-+    width: 100%;
-+    justify-content: space-between;
++  .sidebar {
++    flex-direction: column;
 +  }
 +}
