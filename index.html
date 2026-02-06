@@ -1,52 +1,133 @@
 diff --git a/index.html b/index.html
 new file mode 100644
-index 0000000000000000000000000000000000000000..e9c2ef5cf0bf51b31afa34630df8df4fc59cbb30
+index 0000000000000000000000000000000000000000..0a5df250f13269b5cb387af96d874df570b5b8c2
 --- /dev/null
 +++ b/index.html
-@@ -0,0 +1,49 @@
+@@ -0,0 +1,130 @@
 +<!DOCTYPE html>
 +<html lang="en">
 +  <head>
 +    <meta charset="UTF-8" />
 +    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-+    <title>Poxel Lite Arena</title>
++    <title>Poxel Arena Demo</title>
 +    <link rel="stylesheet" href="style.css" />
 +  </head>
 +  <body>
-+    <div class="hud">
++    <header class="topbar">
 +      <div class="brand">
 +        <span class="logo">PX</span>
 +        <div>
-+          <h1>Poxel Lite</h1>
-+          <p>WASD to move · Mouse to aim · Click to shoot · Space to dash</p>
++          <h1>Poxel Arena</h1>
++          <p>Fast-paced voxel shooter demo</p>
 +        </div>
 +      </div>
-+      <div class="stats">
-+        <div><span>Health</span><strong id="health">100</strong></div>
-+        <div><span>Ammo</span><strong id="ammo">30</strong></div>
-+        <div><span>Wave</span><strong id="wave">1</strong></div>
-+      </div>
-+      <button id="restart">Restart</button>
-+    </div>
++      <nav class="top-actions">
++        <button class="ghost" id="openSettings">Settings</button>
++        <button id="restart">Respawn</button>
++      </nav>
++    </header>
 +
-+    <div class="game-shell">
-+      <canvas id="game" width="960" height="540"></canvas>
-+      <div class="mini-map" id="minimap"></div>
-+    </div>
++    <main class="layout">
++      <aside class="sidebar">
++        <section class="panel">
++          <h2>Loadout</h2>
++          <div class="loadout">
++            <div class="weapon">
++              <span>Primary</span>
++              <strong>Pulse Rifle</strong>
++            </div>
++            <div class="weapon">
++              <span>Secondary</span>
++              <strong>Shock Pistol</strong>
++            </div>
++          </div>
++          <div class="meter">
++            <span>Health</span>
++            <div class="bar"><div id="healthBar"></div></div>
++            <strong id="health">100</strong>
++          </div>
++          <div class="meter">
++            <span>Ammo</span>
++            <div class="bar"><div id="ammoBar"></div></div>
++            <strong id="ammo">30</strong>
++          </div>
++        </section>
++
++        <section class="panel">
++          <h2>Match</h2>
++          <div class="stat-grid">
++            <div>
++              <span>Wave</span>
++              <strong id="wave">1</strong>
++            </div>
++            <div>
++              <span>Dash</span>
++              <strong id="dashStatus">Ready</strong>
++            </div>
++            <div>
++              <span>Score</span>
++              <strong id="score">0</strong>
++            </div>
++          </div>
++          <p class="hint">WASD to move · Mouse to aim · Click to shoot · Space to dash</p>
++        </section>
++      </aside>
++
++      <section class="arena">
++        <div class="arena-frame">
++          <canvas id="game" width="960" height="540"></canvas>
++          <div class="crosshair">
++            <span></span>
++            <span></span>
++          </div>
++          <div class="mini-map" id="minimap"></div>
++        </div>
++      </section>
++
++      <aside class="sidebar right">
++        <section class="panel">
++          <h2>Leaderboard</h2>
++          <ol class="leaderboard" id="leaderboard"></ol>
++        </section>
++        <section class="panel">
++          <h2>Comms</h2>
++          <div class="chat" id="chat"></div>
++          <div class="chat-input">
++            <input type="text" placeholder="Say something..." disabled />
++            <button class="ghost" disabled>Send</button>
++          </div>
++        </section>
++      </aside>
++    </main>
 +
 +    <div class="overlay" id="overlay">
-+      <div class="panel">
++      <div class="panel modal">
 +        <h2>Drop In</h2>
 +        <p>
-+          A bite-sized voxel arena inspired by poxel.io. Move, dodge, and clear the wave. Blocks protect you but
-+          can be destroyed.
++          This is a fan-made arena demo inspired by the pacing and style of voxel shooters. It is not affiliated
++          with poxel.io.
 +        </p>
 +        <ul>
-+          <li>WASD to move</li>
-+          <li>Mouse to aim, click to shoot</li>
-+          <li>Space to dash (cooldown)</li>
++          <li>Strafe and peek from destructible blocks.</li>
++          <li>Dash to dodge pressure waves.</li>
++          <li>Clear each wave to push the score higher.</li>
 +        </ul>
 +        <button id="start">Start Match</button>
++      </div>
++    </div>
++
++    <div class="settings" id="settings">
++      <div class="panel modal">
++        <h2>Settings</h2>
++        <label>
++          Aim Assist
++          <input type="checkbox" id="assist" checked />
++        </label>
++        <label>
++          Music
++          <input type="checkbox" id="music" />
++        </label>
++        <button class="ghost" id="closeSettings">Close</button>
 +      </div>
 +    </div>
 +
