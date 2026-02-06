@@ -1,0 +1,55 @@
+diff --git a/index.html b/index.html
+new file mode 100644
+index 0000000000000000000000000000000000000000..e9c2ef5cf0bf51b31afa34630df8df4fc59cbb30
+--- /dev/null
++++ b/index.html
+@@ -0,0 +1,49 @@
++<!DOCTYPE html>
++<html lang="en">
++  <head>
++    <meta charset="UTF-8" />
++    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <title>Poxel Lite Arena</title>
++    <link rel="stylesheet" href="style.css" />
++  </head>
++  <body>
++    <div class="hud">
++      <div class="brand">
++        <span class="logo">PX</span>
++        <div>
++          <h1>Poxel Lite</h1>
++          <p>WASD to move · Mouse to aim · Click to shoot · Space to dash</p>
++        </div>
++      </div>
++      <div class="stats">
++        <div><span>Health</span><strong id="health">100</strong></div>
++        <div><span>Ammo</span><strong id="ammo">30</strong></div>
++        <div><span>Wave</span><strong id="wave">1</strong></div>
++      </div>
++      <button id="restart">Restart</button>
++    </div>
++
++    <div class="game-shell">
++      <canvas id="game" width="960" height="540"></canvas>
++      <div class="mini-map" id="minimap"></div>
++    </div>
++
++    <div class="overlay" id="overlay">
++      <div class="panel">
++        <h2>Drop In</h2>
++        <p>
++          A bite-sized voxel arena inspired by poxel.io. Move, dodge, and clear the wave. Blocks protect you but
++          can be destroyed.
++        </p>
++        <ul>
++          <li>WASD to move</li>
++          <li>Mouse to aim, click to shoot</li>
++          <li>Space to dash (cooldown)</li>
++        </ul>
++        <button id="start">Start Match</button>
++      </div>
++    </div>
++
++    <script src="main.js"></script>
++  </body>
++</html>
