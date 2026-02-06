@@ -1,23 +1,33 @@
 diff --git a/main.js b/main.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2b63d80a0
+index 0000000000000000000000000000000000000000..b04a3588838e813a838c27d4192747c9a6443754
 --- /dev/null
 +++ b/main.js
-@@ -0,0 +1,437 @@
+@@ -0,0 +1,512 @@
 +const canvas = document.getElementById("game");
 +const ctx = canvas.getContext("2d");
 +const healthEl = document.getElementById("health");
 +const ammoEl = document.getElementById("ammo");
 +const waveEl = document.getElementById("wave");
++const scoreEl = document.getElementById("score");
++const dashStatus = document.getElementById("dashStatus");
 +const restartBtn = document.getElementById("restart");
 +const overlay = document.getElementById("overlay");
 +const startBtn = document.getElementById("start");
 +const minimap = document.getElementById("minimap");
++const leaderboardEl = document.getElementById("leaderboard");
++const chatEl = document.getElementById("chat");
++const healthBar = document.getElementById("healthBar");
++const ammoBar = document.getElementById("ammoBar");
++const settings = document.getElementById("settings");
++const openSettings = document.getElementById("openSettings");
++const closeSettings = document.getElementById("closeSettings");
 +
 +const state = {
 +  running: false,
 +  time: 0,
 +  wave: 1,
++  score: 0,
 +  blockSize: 48,
 +  ammo: 30,
 +  maxAmmo: 30,
@@ -42,6 +52,21 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +
 +const keys = new Set();
 +let mouse = { x: canvas.width / 2, y: canvas.height / 2, down: false };
++
++const leaderboard = [
++  { name: "Nova", score: 1220 },
++  { name: "Orbit", score: 1110 },
++  { name: "Pulse", score: 980 },
++  { name: "You", score: 0 },
++  { name: "Echo", score: 640 },
++];
++
++const chatLines = [
++  "Nova: mid push!",
++  "Orbit: blocks gone left",
++  "Pulse: wave clear",
++  "Echo: need cover",
++];
 +
 +function buildGrid() {
 +  const cols = Math.floor(canvas.width / state.blockSize);
@@ -75,6 +100,7 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +function resetMatch() {
 +  state.time = 0;
 +  state.wave = 1;
++  state.score = 0;
 +  state.ammo = state.maxAmmo;
 +  player.health = 100;
 +  player.x = canvas.width / 2;
@@ -101,6 +127,10 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +  healthEl.textContent = Math.max(0, Math.round(player.health));
 +  ammoEl.textContent = state.ammo;
 +  waveEl.textContent = state.wave;
++  scoreEl.textContent = state.score;
++  dashStatus.textContent = state.dashCooldown > 0 ? "Cooldown" : "Ready";
++  healthBar.style.width = `${Math.max(0, player.health)}%`;
++  ammoBar.style.width = `${(state.ammo / state.maxAmmo) * 100}%`;
 +}
 +
 +function updateMiniMap() {
@@ -117,6 +147,26 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +      minimap.appendChild(cell);
 +    }
 +  }
++}
++
++function updateLeaderboard() {
++  leaderboard.find((entry) => entry.name === "You").score = state.score;
++  leaderboard.sort((a, b) => b.score - a.score);
++  leaderboardEl.innerHTML = "";
++  leaderboard.forEach((entry) => {
++    const item = document.createElement("li");
++    item.innerHTML = `<span>${entry.name}</span><strong>${entry.score}</strong>`;
++    leaderboardEl.appendChild(item);
++  });
++}
++
++function updateChat() {
++  chatEl.innerHTML = "";
++  chatLines.forEach((line) => {
++    const paragraph = document.createElement("p");
++    paragraph.textContent = line;
++    chatEl.appendChild(paragraph);
++  });
 +}
 +
 +function shoot() {
@@ -145,6 +195,7 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +  player.vy += Math.sin(angle) * 420;
 +  player.dashTime = 0.18;
 +  state.dashCooldown = 1.6;
++  updateHud();
 +}
 +
 +function handleInput(dt) {
@@ -218,6 +269,7 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +  spawnParticle(bullet.x, bullet.y, "#7cd4ff");
 +  if (block.hp <= 0) {
 +    state.grid[row][col] = null;
++    state.score += 5;
 +  }
 +  return true;
 +}
@@ -247,6 +299,7 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +      if (distance < enemy.radius) {
 +        enemy.hp -= 1;
 +        hitEnemy = true;
++        state.score += 20;
 +        spawnParticle(bullet.x, bullet.y, "#ff9e59");
 +      }
 +    });
@@ -272,6 +325,9 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +    state.running = false;
 +    overlay.classList.remove("hidden");
 +  }
++
++  updateHud();
++  updateLeaderboard();
 +}
 +
 +function drawGrid() {
@@ -283,6 +339,13 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +      const healthShade = 60 + block.hp * 45;
 +      ctx.fillStyle = `rgb(${healthShade}, ${160}, ${255})`;
 +      ctx.fillRect(
++        x * state.blockSize + 3,
++        y * state.blockSize + 3,
++        state.blockSize - 6,
++        state.blockSize - 6
++      );
++      ctx.strokeStyle = "rgba(10, 18, 30, 0.6)";
++      ctx.strokeRect(
 +        x * state.blockSize + 3,
 +        y * state.blockSize + 3,
 +        state.blockSize - 6,
@@ -336,12 +399,12 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +}
 +
 +function drawHud() {
-+  ctx.fillStyle = "rgba(10, 15, 26, 0.8)";
-+  ctx.fillRect(14, 14, 140, 60);
++  ctx.fillStyle = "rgba(10, 15, 26, 0.6)";
++  ctx.fillRect(14, 14, 160, 60);
 +  ctx.fillStyle = "#7cd4ff";
 +  ctx.font = "12px sans-serif";
 +  ctx.fillText(`Dash ${state.dashCooldown > 0 ? "..." : "Ready"}`, 24, 38);
-+  ctx.fillText(`Ammo ${state.ammo}/${state.maxAmmo}`, 24, 58);
++  ctx.fillText(`Wave ${state.wave}`, 24, 58);
 +}
 +
 +function render() {
@@ -428,6 +491,7 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +  overlay.classList.add("hidden");
 +  state.running = true;
 +  updateMiniMap();
++  updateLeaderboard();
 +});
 +
 +startBtn.addEventListener("click", () => {
@@ -435,9 +499,20 @@ index 0000000000000000000000000000000000000000..0c605f3236d0adbd721367b9777735e2
 +  overlay.classList.add("hidden");
 +  state.running = true;
 +  updateMiniMap();
++  updateLeaderboard();
++});
++
++openSettings.addEventListener("click", () => {
++  settings.classList.remove("hidden");
++});
++
++closeSettings.addEventListener("click", () => {
++  settings.classList.add("hidden");
 +});
 +
 +resetMatch();
 +updateMiniMap();
++updateLeaderboard();
++updateChat();
 +requestAnimationFrame(loop);
 +requestAnimationFrame(tickAutoFire);
